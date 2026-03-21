@@ -1,0 +1,13 @@
+objective:
+    create a plataform that save and manage the stock(but only in mvp version, in future can do more things) of any enterprise or business.
+
+how its works:
+    The plataform will have users, each user can create a stoque and invite to others user, clearly the stock creator one will be the admin of the stock
+
+Entities found: 
+    *workspaces
+    *workspace_members
+    *users
+    *products
+    *suppliers(fornecedores)
+    *inventory_movements(historico de estoque)
