@@ -6,7 +6,7 @@ import { SlugVO } from "@shared/domain/value-objects/slug.vo";
 import { BirthdateVO } from "../value-objects/birthdate.vo";
 
 export interface IUser {
-    id: IdVO
+    readonly id: IdVO
     name: NameVO
     email: EmailVO
     slug: SlugVO
@@ -15,9 +15,25 @@ export interface IUser {
     status: "ACTIVE" | "DELETED" | "PADDING" | "SUSPENDED"
     role: "ADMIN" | "NORMAL"
     deletedAt?: Date | null
-    createdAt?: Date | null
+    readonly createdAt?: Date | null
     updatedAt?: Date | null
 }
+
+export interface IPrimitiveUser {
+    readonly id: string
+    name: string
+    email: string
+    slug: string
+    password: string
+    birthdate: Date
+    status: "ACTIVE" | "DELETED" | "PADDING" | "SUSPENDED"
+    role: "ADMIN" | "NORMAL"
+    deletedAt?: Date | null
+    readonly createdAt?: Date | null
+    updatedAt?: Date | null
+}
+
+export type IReturnbleUser = Omit<IPrimitiveUser, 'password'>
 
 export class User {
     private readonly props: IUser
@@ -27,7 +43,24 @@ export class User {
         Object.freeze(this)
     }
 
-    getProps() {
+    
+    
+    static createInstance(name: string, passwordHashed: string, email: string, birthdate: string | Date, role: "ADMIN" | "NORMAL" = "NORMAL", status: "ACTIVE" | "DELETED" | "PADDING" | "SUSPENDED" = "ACTIVE"): User {
+        const passwordVO = new PasswordVO(passwordHashed)
+        const idVO = new IdVO()
+        const nameVO = new NameVO(name)
+        const emailVO = new EmailVO(email)
+        const birthdateVO = new BirthdateVO(birthdate)
+        const slugVO = SlugVO.createFromText(nameVO.get())
+        
+        return new User({ birthdate: birthdateVO, email: emailVO, id: idVO, name: nameVO, password: passwordVO, role: role, status: status, slug: slugVO })
+    }
+    
+    static restore(props: IUser): User {
+        return new User(props);
+    }
+
+    getProps(): IPrimitiveUser {
         return {
             id: this.props.id.get(),
             name: this.props.name.get(),
@@ -43,19 +76,38 @@ export class User {
         }
     }
 
-    static createInstance(name: string, passwordHashed: string, email: string, birthdate: string | Date, role: "ADMIN" | "NORMAL" = "NORMAL", status: "ACTIVE" | "DELETED" | "PADDING" | "SUSPENDED" = "ACTIVE"): User {
-        const passwordVO = new PasswordVO(passwordHashed)
-        const idVO = new IdVO()
-        const nameVO = new NameVO(name)
-        const emailVO = new EmailVO(email)
-        const birthdateVO = new BirthdateVO(birthdate)
-        const slugVO = SlugVO.createFromText(nameVO.get())
-
-        return new User({ birthdate: birthdateVO, email: emailVO, id: idVO, name: nameVO, password: passwordVO, role: role, status: status, slug: slugVO })
+    getReturnbleProps (): IReturnbleUser {
+        const {password, ...propsToReturn} = this.getProps()
+        return propsToReturn
+    }
+    
+    setName(name: NameVO) {
+        this.props.name = name 
+        this.props.slug = SlugVO.createFromText(name.get())
+    }
+    
+    setEmail(email: EmailVO) {
+        this.props.email = email
+    }
+    
+    setPassword(password: PasswordVO) {
+        this.props.password = password
+    }
+    
+    setBirthdate(birthdate: BirthdateVO) {
+        this.props.birthdate = birthdate
+    }
+    
+    private setSlug(slug: SlugVO) {
+        this.props.slug = slug
     }
 
-    static restore(props: IUser): User {
-        return new User(props);
+    setRole (role: "ADMIN" | "NORMAL") {
+        this.props.role = role
+    }
+
+    setStatus (status: "ACTIVE" | "DELETED" | "PADDING" | "SUSPENDED") {
+        this.props.status = status
     }
 }
 

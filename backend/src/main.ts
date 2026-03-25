@@ -2,9 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true
+  }))
 
   const config = new DocumentBuilder()
     .setTitle('Stock Flow API')
@@ -16,18 +23,18 @@ async function bootstrap() {
       'e integrar sistemas externos de faturamento ou logística diretamente ao ecossistema da plataforma.'
     )
     .setVersion('1.0')
-    // .addTag(
-    //   'Utilizador',
-    //   'Gestão de acesso e identidade. Inclui autenticação, perfis de utilizador, permissões de nível de conta e preferências de sistema.'
-    // )
-    // .addTag(
-    //   'Workspace',
-    //   'Administração de instâncias de trabalho independentes. Permite configurar diferentes empresas ou unidades de negócio sob a mesma conta SaaS.'
-    // )
-    // .addTag(
-    //   'Produto',
-    //   'Controle operacional de stock. Focado na monitorização de quantidades, registo de entradas (compras/devoluções) e saídas (vendas/perdas) de itens.'
-    // )
+    .addTag(
+      'Usuário',
+      'Gestão de acesso e identidade. Inclui autenticação, perfis de utilizador, permissões de nível de conta e preferências de sistema.'
+    )
+    .addTag(
+      'Workspace',
+      'Administração de instâncias de trabalho independentes. Permite configurar diferentes empresas ou unidades de negócio sob a mesma conta SaaS.'
+    )
+    .addTag(
+      'Produto',
+      'Controle operacional de stock. Focado na monitorização de quantidades, registo de entradas (compras/devoluções) e saídas (vendas/perdas) de itens.'
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

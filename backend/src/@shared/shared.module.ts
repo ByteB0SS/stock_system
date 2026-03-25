@@ -16,5 +16,6 @@ import { ConfigModule } from '@nestjs/config';
             useClass: JwtTokenAdapter
         }
     ],
+    exports: [TOKEN]
 })
 export class SharedModule {}

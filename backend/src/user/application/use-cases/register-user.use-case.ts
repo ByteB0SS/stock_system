@@ -1,10 +1,10 @@
-import { HashPort } from "@shared/application/ports/hash.port";
-import { TokenPort } from "@shared/application/ports/token.port";
+import { HASH, HashPort } from "@shared/application/ports/hash.port";
 import { UseCasePort } from "@shared/application/ports/use-case.port";
 import { User } from "src/user/domain/entities/user.entity";
-import { UserRepositoryPort } from "../ports/user-repository.port";
+import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
 import { EmailVO } from "src/user/domain/value-objects/email.vo";
 import { PasswordVO } from "src/user/domain/value-objects/password.vo";
+import { Inject, Injectable } from "@nestjs/common";
 
 export interface registerUserInputDto {
     email: string,
@@ -13,8 +13,9 @@ export interface registerUserInputDto {
     birthdate: string,
 }
 
+@Injectable()
 export class RegisterUserUseCase implements UseCasePort<registerUserInputDto, Promise<User>> {
-    constructor(private readonly hasher: HashPort, private readonly tokenManager: TokenPort, private readonly userRepository: UserRepositoryPort) {}
+    constructor(@Inject(HASH) private readonly hasher: HashPort, @Inject(USER_REPOSITORY) private readonly userRepository: UserRepositoryPort) {}
 
     async execute(input: registerUserInputDto): Promise<User> {
         const userWithSameEmail = await this.userRepository.findByEmail(new EmailVO(input.email))
@@ -23,9 +24,7 @@ export class RegisterUserUseCase implements UseCasePort<registerUserInputDto, Pr
             throw new Error('Email has account.')
         }
 
-        if (!PasswordVO.isValid(input.password)) {
-            throw new Error('Invalid password format.')
-        }
+        PasswordVO.validateComplexity(input.password)
 
         const passwordHashed = await this.hasher.hash(input.password)
 

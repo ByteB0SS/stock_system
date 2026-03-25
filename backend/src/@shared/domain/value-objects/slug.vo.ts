@@ -8,7 +8,17 @@ export class SlugVO {
         this.value = value;
     }
 
+    private static generateHexSuffix(): string {
+        let suffix = '';
+        while (suffix.length < 10) {
+            suffix += Math.floor(Math.random() * 16).toString(16);
+        }
+        return suffix;
+    }
+
     public static createFromText(text: string): SlugVO {
+        const suffix = this.generateHexSuffix();
+
         const cleaned = text
             .trim()
             .toLowerCase()
@@ -20,7 +30,7 @@ export class SlugVO {
             .replace(/^-+/, '')
             .replace(/-+$/, '');
             
-        return new SlugVO(cleaned);
+        return new SlugVO(`${cleaned}_${suffix}`);
     }
 
     public static restore(slug: string): SlugVO {
@@ -31,7 +41,7 @@ export class SlugVO {
         return this.value;
     }
 
-    public equals(other: SlugVO): boolean {
+    public equals(other: SlugVO): boolean { 
         return this.value === other.get();
     }
 }

@@ -1,11 +1,11 @@
-export type tokenPayload = {
-    sub: string
-    [key: string]: unknown
-}
+export interface validationReturnType {
+    payload: any,
+    isValid: boolean
+} 
 
 export interface TokenPort {
-    genToken<T extends object>(payload: T): string
-    isValid (token: string): boolean
+    genToken<T extends object>(payload: T, tokenType: "ACCESS_TOKEN" | "REFRESH_TOKEN", expiresIn: number): string
+    isValid (token: string, validationType: "ACCESS_TOKEN" | "REFRESH_TOKEN"): validationReturnType
 }
 
 export const TOKEN = Symbol("TOKEN")
