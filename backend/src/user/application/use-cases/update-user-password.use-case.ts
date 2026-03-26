@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { UseCasePort } from "@shared/application/ports/use-case.port";
-import { UserRepositoryPort } from "../ports/user-repository.port";
+import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
 import { IdVO } from "src/user/domain/value-objects/id.vo";
-import { HashPort } from "@shared/application/ports/hash.port";
+import { HASH, HashPort } from "@shared/application/ports/hash.port";
 import { PasswordVO } from "src/user/domain/value-objects/password.vo";
 
 export interface UpdateUserPasswordInput {
@@ -13,7 +13,7 @@ export interface UpdateUserPasswordInput {
 
 @Injectable()
 export class UpdateUserPasswordUseCase implements UseCasePort<UpdateUserPasswordInput, boolean>{
-    constructor (private readonly userRepository: UserRepositoryPort, private readonly hasher: HashPort) {}
+    constructor (@Inject(USER_REPOSITORY) private readonly userRepository: UserRepositoryPort, @Inject(HASH) private readonly hasher: HashPort) {}
 
     async execute(input: UpdateUserPasswordInput): Promise<boolean> {
         const userToUpdate = await this.userRepository.findById(input.userId)

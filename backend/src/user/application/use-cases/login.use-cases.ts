@@ -1,10 +1,12 @@
-import  { HASH, HashPort } from "@shared/application/ports/hash.port";
-import  { TOKEN, TokenPort } from "@shared/application/ports/token.port";
+import { HASH, HashPort } from "@shared/application/ports/hash.port";
+import { TOKEN, TokenPort } from "@shared/application/ports/token.port";
 import { UseCasePort } from "@shared/application/ports/use-case.port";
-import  { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
+import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
 import { EmailVO } from "src/user/domain/value-objects/email.vo";
 import { AUTH_SESSION_GENERATOR_PORT, AuthSessionGeneratorPort, userTokenPayload } from "../ports/auth-session-generator.port";
 import { Inject, Injectable } from "@nestjs/common";
+import { User } from "src/user/domain/entities/user.entity";
+
 
 export interface loginUserInputDto {
     email: string,
@@ -14,19 +16,25 @@ export interface loginUserInputDto {
 export interface loginRetrunType {
     accessToken: string,
     refreshToken: string
+    user?: User
 }
 
 @Injectable()
 export class LoginUserUseCase implements UseCasePort<loginUserInputDto, Promise<loginRetrunType>> {
-    constructor(@Inject(HASH) private readonly hasher: HashPort, @Inject(TOKEN) private readonly tokenManager: TokenPort, @Inject(USER_REPOSITORY) private readonly userRepository: UserRepositoryPort,@Inject(AUTH_SESSION_GENERATOR_PORT) private readonly resfreshAndAccessTokenGenerator: AuthSessionGeneratorPort) {}
+    constructor(@Inject(HASH) private readonly hasher: HashPort, @Inject(TOKEN) private readonly tokenManager: TokenPort, @Inject(USER_REPOSITORY) private readonly userRepository: UserRepositoryPort, @Inject(AUTH_SESSION_GENERATOR_PORT) private readonly resfreshAndAccessTokenGenerator: AuthSessionGeneratorPort) { }
 
-    async execute(credentials: loginUserInputDto): Promise<loginRetrunType> {
+    async execute(credentials: loginUserInputDto, returnUser: boolean = true): Promise<loginRetrunType> {
         const userWithSameEmail = await this.userRepository.findByEmail(new EmailVO(credentials.email))
-        
-        if (!userWithSameEmail || !this.hasher.isValid(credentials.password, userWithSameEmail.getProps().password)) {
+
+        if (!userWithSameEmail) {
             throw new Error('Incorrect password or email.')
         }
-        
+
+        const passwordIsCorrect = await this.hasher.isValid(credentials.password, userWithSameEmail.getProps().password)
+        if (!passwordIsCorrect) {
+            throw new Error('Incorrect password or email.')
+        }
+
         const userProps = userWithSameEmail.getProps()
 
         const payload: userTokenPayload = {
@@ -34,7 +42,13 @@ export class LoginUserUseCase implements UseCasePort<loginUserInputDto, Promise<
             role: userProps.role,
             slug: userProps.slug
         }
+        const tokens = this.resfreshAndAccessTokenGenerator.genTokens(payload)
 
-        return this.resfreshAndAccessTokenGenerator.genTokens(payload)
+        if (!returnUser) return tokens
+
+        return {
+            ...tokens,
+            user: userWithSameEmail
+        }
     }
 }

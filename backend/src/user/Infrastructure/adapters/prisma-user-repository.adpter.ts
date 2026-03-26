@@ -62,8 +62,8 @@ export class PrismaUserRepositoryAdapter implements UserRepositoryPort {
     }
 
     async update(user: User): Promise<User> {
-        const { updatedAt, createdAt, deletedAt, id, slug, ...dataToUpdate } = user.getProps()
-        const updatedUser = await this.prisma.user.update({ where: { id: id }, data: { ...dataToUpdate, slug: SlugVO.createFromText(dataToUpdate.name).get() } })
+        const { updatedAt, createdAt, deletedAt, id, ...dataToUpdate } = user.getProps()
+        const updatedUser = await this.prisma.user.update({ where: { id: id }, data: { ...dataToUpdate } })
         return this.restoreUser(updatedUser)
     }
 

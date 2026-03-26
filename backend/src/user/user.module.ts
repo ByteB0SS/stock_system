@@ -10,6 +10,11 @@ import { BcryptHashAdapter } from '@shared/infrastructure/adapters/bcrypt-hash.a
 import { SharedModule } from '@shared/shared.module';
 import { UserController } from './presentation/controllers/user.controller';
 import { LoginUserUseCase } from './application/use-cases/login.use-cases';
+import { RefreshTokenDto } from './presentation/dtos/refresh-token.dto';
+import { RefreshTokenUsecase } from './application/use-cases/refresh-token.use-case';
+import { UpdateUserUseCase } from './application/use-cases/update-user.use-case';
+import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case';
+import { UpdateUserPasswordUseCase } from './application/use-cases/update-user-password.use-case';
 
 @Module({
     imports: [PrismaModule, SharedModule],
@@ -17,21 +22,32 @@ import { LoginUserUseCase } from './application/use-cases/login.use-cases';
         RegisterUserUseCase,
         LoginUserUseCase,
         AuthSessionGeneratorAdapter,
+        RefreshTokenUsecase,
+        UpdateUserUseCase,
+        DeleteUserUseCase,
+        UpdateUserPasswordUseCase,
         {
-            provide: AUTH_SESSION_GENERATOR_PORT, 
+            provide: AUTH_SESSION_GENERATOR_PORT,
             useClass: AuthSessionGeneratorAdapter
         },
         {
             provide: USER_REPOSITORY,
             useClass: PrismaUserRepositoryAdapter
-        }, 
+        },
         {
             provide: HASH,
             useClass: BcryptHashAdapter
         },
     ],
-    exports: [RegisterUserUseCase, LoginUserUseCase],
+    exports: [
+        RegisterUserUseCase,
+        LoginUserUseCase,
+        RefreshTokenUsecase,
+        UpdateUserUseCase,
+        DeleteUserUseCase,
+        UpdateUserPasswordUseCase,
+    ],
     controllers: [UserController]
-    
+
 })
-export class UserModule {}
+export class UserModule { }
