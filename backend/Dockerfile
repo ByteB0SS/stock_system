@@ -9,5 +9,5 @@ COPY prisma ./prisma
 RUN pnpm prisma generate
 COPY . .
 RUN pnpm build
-CMD [ "pnpm", "start:prod" ]
-EXPOSE 3000
+CMD ["node", "dist/src/main"]
+EXPOSE 3000                                             
