@@ -12,7 +12,8 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@shared/*": ["src/@shared/*"]
+      "@shared/*": ["src/@shared/*"],
+      "generated/*": ["src/generated/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
