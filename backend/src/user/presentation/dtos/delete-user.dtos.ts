@@ -1,6 +1,8 @@
-import { } from 'class-validator'
-import { ApiProperty } from '@nestjs/swagger'
-import { IReturnbleUser } from 'src/user/domain/entities/user.entity'
+import { ApiProperty } from "@nestjs/swagger"
+
+export class deleteUserDto {
+    userId!: string
+}
 
 export class DeleteUserSuccessResponseDto {
     @ApiProperty({

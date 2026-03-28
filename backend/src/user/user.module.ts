@@ -10,11 +10,13 @@ import { BcryptHashAdapter } from '@shared/infrastructure/adapters/bcrypt-hash.a
 import { SharedModule } from '@shared/shared.module';
 import { UserController } from './presentation/controllers/user.controller';
 import { LoginUserUseCase } from './application/use-cases/login.use-cases';
-import { RefreshTokenDto } from './presentation/dtos/refresh-token.dto';
+import { RefreshTokenDto } from './presentation/dtos/refresh-token.dtos';
 import { RefreshTokenUsecase } from './application/use-cases/refresh-token.use-case';
 import { UpdateUserUseCase } from './application/use-cases/update-user.use-case';
 import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case';
 import { UpdateUserPasswordUseCase } from './application/use-cases/update-user-password.use-case';
+import { GetUserUseCase } from './application/use-cases/get-user.use-case';
+import { GetUsersUseCase } from './application/use-cases/get-users.use-case';
 
 @Module({
     imports: [PrismaModule, SharedModule],
@@ -26,6 +28,8 @@ import { UpdateUserPasswordUseCase } from './application/use-cases/update-user-p
         UpdateUserUseCase,
         DeleteUserUseCase,
         UpdateUserPasswordUseCase,
+        GetUserUseCase,
+        GetUsersUseCase,
         {
             provide: AUTH_SESSION_GENERATOR_PORT,
             useClass: AuthSessionGeneratorAdapter
@@ -46,6 +50,8 @@ import { UpdateUserPasswordUseCase } from './application/use-cases/update-user-p
         UpdateUserUseCase,
         DeleteUserUseCase,
         UpdateUserPasswordUseCase,
+        GetUserUseCase,
+        GetUsersUseCase,
     ],
     controllers: [UserController]
 

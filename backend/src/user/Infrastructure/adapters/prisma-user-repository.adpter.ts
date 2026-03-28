@@ -9,6 +9,7 @@ import { IdVO } from "src/user/domain/value-objects/id.vo";
 import { NameVO } from "src/user/domain/value-objects/name.vo";
 import { PasswordVO } from "src/user/domain/value-objects/password.vo";
 import { User as prismaUser } from "generated/prisma";
+import { UserSelectors } from "src/user/application/use-cases/get-user.use-case";
 
 @Injectable()
 export class PrismaUserRepositoryAdapter implements UserRepositoryPort {
@@ -40,16 +41,51 @@ export class PrismaUserRepositoryAdapter implements UserRepositoryPort {
         return this.restoreUser(user)
     }
 
-    async findMany(limit: number = 15, lastId: string): Promise<User[]> {
-        const users = await this.prisma.user.findMany({
+    async findByUnique(uniqueSelectors: UserSelectors): Promise<User | null> {
+        const user = await this.prisma.user.findUnique({
             where: {
-                status: "ACTIVE"
+                id: uniqueSelectors.id,
+                slug: uniqueSelectors.slug,
             },
-            take: limit,
-            ...(lastId && { skip: 1, cursor: { id: lastId } }),
+        });
+        if (!user) return null
+        return this.restoreUser(user)
+    }
+
+    async findMany(lastId?: string, limit: number = 15, slugFilter?: string, nameFilter?: string): Promise<User[]> {
+        const whereConfig = {
+            status: "ACTIVE" as const,
+            ...(slugFilter && { slug: { contains: slugFilter, mode: "insensitive" as const } }),
+            ...(nameFilter && { name: { contains: nameFilter, mode: "insensitive" as const } }),
+        };
+
+
+        let validCursor: {id: string} | undefined = undefined
+        if (lastId) {
+            const cursorExists = await this.prisma.user.findFirst({
+                where: {
+                    id: lastId,
+                    ...whereConfig
+                },
+                select: { id: true }
+            });
+
+            if (cursorExists) {
+                validCursor = { id: lastId };
+            }
+        }
+
+        const users = await this.prisma.user.findMany({
+            where: whereConfig,
+            take: limit || 10,
+            ...(validCursor && {
+                skip: 1,
+                cursor: validCursor
+            }),
             orderBy: { createdAt: "asc" }
-        })
-        return users.map(user => this.restoreUser(user))
+        });
+
+        return users.map(user => this.restoreUser(user));
     }
 
     async delete(id: IdVO): Promise<void> {

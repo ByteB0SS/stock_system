@@ -1,16 +1,13 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from "@nestjs/common";
-import { ApiOperation, ApiTags, ApiCreatedResponse, ApiOkResponse, ApiProperty, ApiParam } from "@nestjs/swagger";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from "@nestjs/common";
+import { ApiOperation, ApiTags, ApiCreatedResponse, ApiOkResponse, ApiProperty, ApiParam, ApiQuery, ApiBadRequestResponse, ApiConflictResponse, ApiResponse } from "@nestjs/swagger";
 import { RegisterUserUseCase } from "src/user/application/use-cases/register-user.use-case";
-import { RegisterUserDto } from "../dtos/register-user.dto";
+import { RegisterUserDto, RegisterSuccessResponse, RegisterUserConflictResponseDto} from "../dtos/register-user.dtos";
 import { LoginUserUseCase } from "src/user/application/use-cases/login.use-cases";
-import { RegisterSuccessResponse } from "../dtos/responses-dtos/register-success-response.dto";
-import { LoginDto } from "../dtos/login.dto";
-import { LoginSuccessResponse } from "../dtos/responses-dtos/login-success-response.dtos";
+import { LoginDto, LoginSuccessResponse } from "../dtos/login.dtos";
 import { RefreshTokenUsecase } from "src/user/application/use-cases/refresh-token.use-case";
-import { RefreshTokenDto } from "../dtos/refresh-token.dto";
-import { RefreshTokenSuccessDto } from "../dtos/responses-dtos/refresh-token-success-response.dto";
+import { RefreshTokenDto, RefreshTokenSuccessDto } from "../dtos/refresh-token.dtos";
 import { UpdateUserUseCase } from "src/user/application/use-cases/update-user.use-case";
-import { updateUserDto } from "../dtos/update-user.dto";
+import { updateUserDto, UpdateUserSuccessResponseDto } from "../dtos/update-user.dtos";
 import { BirthdateVO } from "src/user/domain/value-objects/birthdate.vo";
 import { EmailVO } from "src/user/domain/value-objects/email.vo";
 import { NameVO } from "src/user/domain/value-objects/name.vo";
@@ -18,11 +15,18 @@ import { IdVO } from "src/user/domain/value-objects/id.vo";
 import { DeleteUserUseCase } from "src/user/application/use-cases/delete-user.use-case";
 import { changeUserPassowrdDto } from "../dtos/change-user-password.dto";
 import { UpdateUserPasswordUseCase } from "src/user/application/use-cases/update-user-password.use-case";
-import { ChangeUserPasswordSuccessResponse } from "../dtos/responses-dtos/change-user-password-responses.dtos";
-import { DeleteUserSuccessResponseDto } from "../dtos/responses-dtos/delete-user-responses.dtos";
+import { getUserQuerydto } from "../dtos/get-user-query.dto";
+import { GetUserUseCase } from "src/user/application/use-cases/get-user.use-case";
+import { GetUsersUseCase } from "src/user/application/use-cases/get-users.use-case";
+import { IReturnbleUser } from "src/user/domain/entities/user.entity";
+import { DeleteUserSuccessResponseDto } from "../dtos/delete-user.dtos";
+import { ChangeUserPasswordSuccessResponse } from "../dtos/update-user-password.dto";
+import { BadRequestResponseDto, ServerErrorResponseDto } from "../dtos/comoms-responses.dtos";
 
 @Controller("user")
 @ApiTags("Usuário")
+@ApiResponse({status: 500, description: 'Erro no servidor', type: ServerErrorResponseDto})
+@ApiBadRequestResponse({description: 'Erro de validação dos dados enviados', type: BadRequestResponseDto})
 export class UserController {
     constructor(
         private readonly userRegister: RegisterUserUseCase,
@@ -31,6 +35,8 @@ export class UserController {
         private readonly userUpdater: UpdateUserUseCase,
         private readonly userDeleter: DeleteUserUseCase,
         private readonly userPasswordUpdater: UpdateUserPasswordUseCase,
+        private readonly userGetter: GetUserUseCase,
+        private readonly usersGetter: GetUsersUseCase
     ) { }
 
     @Post("/auth/register")
@@ -38,29 +44,13 @@ export class UserController {
     @ApiCreatedResponse({
         description: "Conta criada com sucesso",
         type: RegisterSuccessResponse,
-        example: {
-            accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NDMxZjM3MC00Njg3LTRmYWQtOWQ0MS01YmQ1ZGRlNTY2YjYiLCJyb2xlIjoiTk9STUFMIiwic2x1ZyI6InJ1YmVtLWVybmVzdG8tZmlndWVpcmVkb18xMDRlYzVjOTE3IiwidG9rZW5UeXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNzc0NDUzOTE0LCJleHAiOjE3NzQ0NTQ4MTR9.lFds_OeKbVDmU4aX4yQlxfHEwvvcS-lD45y-cm3oq9g",
-            refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NDMxZjM3MC00Njg3LTRmYWQtOWQ0MS01YmQ1ZGRlNTY2YjYiLCJyb2xlIjoiTk9STUFMIiwic2x1ZyI6InJ1YmVtLWVybmVzdG8tZmlndWVpcmVkb18xMDRlYzVjOTE3IiwidG9rZW5UeXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTc3NDQ1MzkxNCwiZXhwIjoxNzc3MDQ1OTE0fQ.0KcVEzEqHyTKqjPhlfZoivABxVCmHiloCAE76xslmzg",
-            user: {
-                id: "8431f370-4687-4fad-9d41-5bd5dde566b6",
-                name: "Rubem Ernesto Figueiredo",
-                email: "rubemernesto_ei1ies@gmail.com",
-                birthdate: "2000-01-01T00:00:00.000Z",
-                slug: "rubem-ernesto-figueiredo_104ec5c917",
-                status: "ACTIVE",
-                role: "NORMAL",
-                createdAt: "2026-03-25T15:51:54.722Z",
-                updatedAt: "2026-03-25T15:51:54.722Z",
-                deletedAt: null
-            },
-            statusCode: 201,
-            message: "Conta criada com sucesso"
-        }
     })
+    @ApiConflictResponse({description: 'Erro de conflito, email em uso', type: RegisterUserConflictResponseDto})
     async registerUser(@Body() dto: RegisterUserDto) {
         const user = (await this.userRegister.execute(dto))
         const userProps = user.getProps()
-        const tokens = await this.login.execute({ email: userProps.email, password: userProps.password }, false)
+        console.log(userProps.password)
+        const tokens = await this.login.execute({ email: userProps.email, password: dto.password }, false)
 
         return {
             accessToken: tokens.accessToken,
@@ -77,24 +67,6 @@ export class UserController {
     @ApiOkResponse({
         description: "Entraste na sua conta com sucesso",
         type: LoginSuccessResponse,
-        example: {
-            accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NDMxZjM3MC00Njg3LTRmYWQtOWQ0MS01YmQ1ZGRlNTY2YjYiLCJyb2xlIjoiTk9STUFMIiwic2x1ZyI6InJ1YmVtLWVybmVzdG8tZmlndWVpcmVkb18xMDRlYzVjOTE3IiwidG9rZW5UeXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNzc0NDUzOTE0LCJleHAiOjE3NzQ0NTQ4MTR9.lFds_OeKbVDmU4aX4yQlxfHEwvvcS-lD45y-cm3oq9g",
-            refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NDMxZjM3MC00Njg3LTRmYWQtOWQ0MS01YmQ1ZGRlNTY2YjYiLCJyb2xlIjoiTk9STUFMIiwic2x1ZyI6InJ1YmVtLWVybmVzdG8tZmlndWVpcmVkb18xMDRlYzVjOTE3IiwidG9rZW5UeXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTc3NDQ1MzkxNCwiZXhwIjoxNzc3MDQ1OTE0fQ.0KcVEzEqHyTKqjPhlfZoivABxVCmHiloCAE76xslmzg",
-            user: {
-                id: "8431f370-4687-4fad-9d41-5bd5dde566b6",
-                name: "Rubem Ernesto Figueiredo",
-                email: "rubemernesto_ei1ies@gmail.com",
-                birthdate: "2000-01-01T00:00:00.000Z",
-                slug: "rubem-ernesto-figueiredo_104ec5c917",
-                status: "ACTIVE",
-                role: "NORMAL",
-                createdAt: "2026-03-25T15:51:54.722Z",
-                updatedAt: "2026-03-25T15:51:54.722Z",
-                deletedAt: null
-            },
-            statusCode: 200,
-            message: "Entraste na sua conta com sucesso"
-        }
     })
     async loginUser(@Body() dto: LoginDto) {
         const response = await this.login.execute(dto)
@@ -120,12 +92,6 @@ export class UserController {
     @ApiOkResponse({
         description: "Recuperação de token válido foi bem sucedida.",
         type: RefreshTokenSuccessDto,
-        example: {
-            accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NDMxZjM3MC00Njg3LTRmYWQtOWQ0MS01YmQ1ZGRlNTY2YjYiLCJyb2xlIjoiTk9STUFMIiwic2x1ZyI6InJ1YmVtLWVybmVzdG8tZmlndWVpcmVkb18xMDRlYzVjOTE3IiwidG9rZW5UeXBlIjoiQUNDRVNTX1RPS0VOIiwiaWF0IjoxNzc0NDUzOTE0LCJleHAiOjE3NzQ0NTQ4MTR9.lFds_OeKbVDmU4aX4yQlxfHEwvvcS-lD45y-cm3oq9g",
-            refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NDMxZjM3MC00Njg3LTRmYWQtOWQ0MS01YmQ1ZGRlNTY2YjYiLCJyb2xlIjoiTk9STUFMIiwic2x1ZyI6InJ1YmVtLWVybmVzdG8tZmlndWVpcmVkb18xMDRlYzVjOTE3IiwidG9rZW5UeXBlIjoiUkVGUkVTSF9UT0tFTiIsImlhdCI6MTc3NDQ1MzkxNCwiZXhwIjoxNzc3MDQ1OTE0fQ.0KcVEzEqHyTKqjPhlfZoivABxVCmHiloCAE76xslmzg",
-            statusCode: 200,
-            message: "Tokens gerado com sucesso"
-        }
     })
     async refreshToken(@Body() dto: RefreshTokenDto) {
         const tokens = await this.tokenRefresher.execute(dto)
@@ -146,23 +112,7 @@ export class UserController {
     })
     @ApiOkResponse({
         description: "Actualização dos dados do usuário bem sucedida.",
-        type: RefreshTokenSuccessDto,
-        example: {
-            user: {
-                id: "f846cf11-f55b-4be4-9062-bf9f7f213d29",
-                name: "Rubem Ernesto Figueiredo",
-                email: "rubemernesto_ei1ies@gmail.com",
-                birthdate: "2000-01-01T00:00:00.000Z",
-                slug: "rubem-ernesto-figueiredo_104ec5c917",
-                status: "ACTIVE",
-                role: "NORMAL",
-                createdAt: "2026-03-25T15:51:54.722Z",
-                updatedAt: "2026-03-25T15:51:54.722Z",
-                deletedAt: null
-            },
-            statusCode: HttpStatus.OK,
-            message: "Informações de usuário actualizadoas com sucesso"
-        }
+        type: UpdateUserSuccessResponseDto,
     })
     async update(@Body() dto: updateUserDto, @Param('id') id: string) {
         const user = await this.userUpdater.execute({
@@ -182,7 +132,7 @@ export class UserController {
     }
 
     @Put('/update/password/:id')
-    @ApiOperation({summary: "Alterar senha de usuário."})
+    @ApiOperation({ summary: "Alterar senha de usuário." })
     @ApiParam({
         name: 'id',
         description: 'O UUID do usuário que será atualizado',
@@ -208,7 +158,7 @@ export class UserController {
     }
 
     @Delete()
-    @ApiOperation({summary: "Deletar usuário."})
+    @ApiOperation({ summary: "Deletar usuário." })
     @ApiParam({
         name: 'id',
         description: 'O UUID do usuário que será atualizado',
@@ -230,6 +180,45 @@ export class UserController {
             message: 'Usuário apagado com sucesso',
             statusCode: HttpStatus.OK,
             isDeleted: true
+        }
+    }
+
+    @Get('get')
+    @ApiQuery({
+        name: 'id',
+        required: false,
+        example: 'f846cf11-f55b-4be4-9062-bf9f7f213d29',
+        description: 'O UUID único do usuário'
+    })
+    @ApiQuery({
+        name: 'slug',
+        required: false,
+        example: 'rubem-ernesto-figueiredo_6e8163e928',
+        description: 'O slug amigável do usuário'
+    })
+    async getUser(@Query('id') id: string, @Query('slug') slug: string) {
+        return {
+            message: "Usuário encontrado.",
+            statusCode: 200,
+            user: (await this.userGetter.execute({ id: id, slug: slug })).getReturnbleProps()
+        }
+    }
+
+
+    @Get('get-many')
+    async getUsers(@Query('limit') limit?: number, @Query('last_id') last_id?: string, @Query('slug_filter') slug_filter?: string, @Query('name_filter') name_filter?: string) {
+        const users = await this.usersGetter.execute({lastId: last_id, limit: limit, slugFilter: slug_filter, nameFilter: name_filter})
+
+        let usersToreturn: IReturnbleUser[] = []
+
+        users.forEach((user) => {
+            usersToreturn.push(user.getReturnbleProps())
+        })
+
+        return {
+            message: usersToreturn.length == 0 ? "Usuários não encontrados" : "Busca de usuarios com sucesso.",
+            statusCode: 200,
+            users: usersToreturn
         }
     }
 }
