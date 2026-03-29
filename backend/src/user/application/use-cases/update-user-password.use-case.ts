@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { UseCasePort } from "@shared/application/ports/use-case.port";
 import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
 import { IdVO } from "src/user/domain/value-objects/id.vo";
@@ -19,11 +19,11 @@ export class UpdateUserPasswordUseCase implements UseCasePort<UpdateUserPassword
         const userToUpdate = await this.userRepository.findById(input.userId)
 
         if (!userToUpdate) {
-            throw new Error ("User not found.")
+            throw new HttpException('Usuário não encontrado', 404)
         }
 
         if (!await this.hasher.isValid(input.oldpassword, userToUpdate.getProps().password)){
-            throw new Error ("Old password is incorrect.")
+            throw new HttpException('Senha antiga está incorreta', 400)
         }
 
         PasswordVO.validateComplexity(input.newPassowrd)

@@ -1,9 +1,11 @@
+import { HttpException } from "@nestjs/common"
+
 export class NameVO {
     private readonly value: string 
 
     constructor (name: string) {
         if (!this.isValid(name)) {
-            throw new Error("Invalid name format")
+            throw new HttpException('O nome deve conter pelo menos 3 caracteres', 400)
         } 
 
         this.value = name.trim()

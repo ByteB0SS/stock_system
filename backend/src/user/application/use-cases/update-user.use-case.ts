@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { UseCasePort } from "@shared/application/ports/use-case.port";
 import { User } from "src/user/domain/entities/user.entity";
 import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
@@ -19,13 +19,13 @@ export class UpdateUserUseCase implements UseCasePort<{ data: updateUserInput, u
 
     async execute(input: { data: updateUserInput; userId: IdVO; }): Promise<User> {
         const user = await this.userRepository.findById(input.userId);
-        if (!user) throw new Error("User doesn't exist.");
+        if (!user) throw new HttpException('Usuário não encontrado', 404)   
 
         if (input.data.email.get() !== user.getProps().email) {
             const emailConflict = await this.userRepository.findByEmail(input.data.email);
 
             if (emailConflict) {
-                throw new Error("The new email is already in use, try another.");
+                throw new HttpException('Já existe um usuário com este email', 400);
             }
 
             user.setEmail(input.data.email);

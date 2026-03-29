@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { UseCasePort } from "@shared/application/ports/use-case.port";
 import { User } from "src/user/domain/entities/user.entity";
 import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
@@ -17,7 +17,7 @@ async execute(input: UserSelectors): Promise<User> {
     const user = await this.userRepository.findByUnique(input);
     if (!user) {
         // O erro nasce aqui. O TS fica feliz porque o fluxo de 'null' é interrompido.
-        throw new Error('Usuário não encontrado'); 
+        throw new HttpException('Usuário não encontrado', 404)   
     }
     return user;
 }

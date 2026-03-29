@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiCreatedResponse, ApiOkResponse, ApiProperty, ApiParam, ApiQuery, ApiBadRequestResponse, ApiConflictResponse, ApiResponse } from "@nestjs/swagger";
 import { RegisterUserUseCase } from "src/user/application/use-cases/register-user.use-case";
 import { RegisterUserDto, RegisterSuccessResponse, RegisterUserConflictResponseDto} from "../dtos/register-user.dtos";
@@ -72,7 +72,7 @@ export class UserController {
         const response = await this.login.execute(dto)
 
         if (!response.user) {
-            throw new Error("User not found.")
+            throw new HttpException('Ocorreu um erro ao tentar recuperar os dados do usuário durante o login', 500)
         }
 
         const user = response.user.getReturnbleProps()

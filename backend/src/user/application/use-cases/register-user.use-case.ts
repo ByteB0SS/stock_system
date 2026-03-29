@@ -4,7 +4,7 @@ import { User } from "src/user/domain/entities/user.entity";
 import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
 import { EmailVO } from "src/user/domain/value-objects/email.vo";
 import { PasswordVO } from "src/user/domain/value-objects/password.vo";
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 
 export interface registerUserInputDto {
     email: string,
@@ -21,7 +21,7 @@ export class RegisterUserUseCase implements UseCasePort<registerUserInputDto, Pr
         const userWithSameEmail = await this.userRepository.findByEmail(new EmailVO(input.email))
 
         if (userWithSameEmail) {
-            throw new Error('Email has account.')
+            throw new HttpException('Já existe um usuário com este email', 400)
         }
 
         PasswordVO.validateComplexity(input.password)

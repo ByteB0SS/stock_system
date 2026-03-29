@@ -4,7 +4,7 @@ import { UseCasePort } from "@shared/application/ports/use-case.port";
 import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
 import { EmailVO } from "src/user/domain/value-objects/email.vo";
 import { AUTH_SESSION_GENERATOR_PORT, AuthSessionGeneratorPort, userTokenPayload } from "../ports/auth-session-generator.port";
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { User } from "src/user/domain/entities/user.entity";
 
 
@@ -27,12 +27,12 @@ export class LoginUserUseCase implements UseCasePort<loginUserInputDto, Promise<
         const userWithSameEmail = await this.userRepository.findByEmail(new EmailVO(credentials.email))
 
         if (!userWithSameEmail) {
-            throw new Error('Incorrect password or email.')
+            throw new HttpException('senha ou email incorretos', 400)
         }
 
         const passwordIsCorrect = await this.hasher.isValid(credentials.password, userWithSameEmail.getProps().password)
         if (!passwordIsCorrect) {
-            throw new Error('Incorrect password or email.')
+            throw new HttpException('senha ou email incorretos', 400)
         }
 
         const userProps = userWithSameEmail.getProps()

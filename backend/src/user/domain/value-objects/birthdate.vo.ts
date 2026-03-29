@@ -1,3 +1,5 @@
+import { HttpException } from "@nestjs/common"
+
 export class BirthdateVO {
     private readonly value: Date
 
@@ -5,11 +7,11 @@ export class BirthdateVO {
         const convertedDate = new Date(date)
 
         if (isNaN(convertedDate.getTime())) {
-            throw new Error("Invalid date: the provided value is not a valid date.");
+            throw new HttpException('Data de nascimento inválida', 400)
         }
 
         if (!this.isOver18(convertedDate)) {
-            throw new Error("User must be 18 or more years old.")
+            throw new HttpException('O usuário deve ser maior de 18 anos', 400)
         }
 
         this.value = convertedDate
