@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from 'src/config/prisma/prisma.module';
 import { USER_REPOSITORY } from './application/ports/user-repository.port';
-import { PrismaUserRepositoryAdapter } from './Infrastructure/adapters/prisma-user-repository.adpter';
+import { PrismaUserRepositoryAdapter } from './infrastructure/adapters/prisma-user-repository.adpter';
 import { AUTH_SESSION_GENERATOR_PORT } from './application/ports/auth-session-generator.port';
-import { AuthSessionGeneratorAdapter } from './Infrastructure/adapters/auth-session-generator.adapter';
+import { AuthSessionGeneratorAdapter } from './infrastructure/adapters/auth-session-generator.adapter';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 import { HASH } from '@shared/application/ports/hash.port';
 import { BcryptHashAdapter } from '@shared/infrastructure/adapters/bcrypt-hash.adapter';

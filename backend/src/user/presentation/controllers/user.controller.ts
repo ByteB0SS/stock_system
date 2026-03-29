@@ -11,7 +11,7 @@ import { updateUserDto, UpdateUserSuccessResponseDto } from "../dtos/update-user
 import { BirthdateVO } from "src/user/domain/value-objects/birthdate.vo";
 import { EmailVO } from "src/user/domain/value-objects/email.vo";
 import { NameVO } from "src/user/domain/value-objects/name.vo";
-import { IdVO } from "src/user/domain/value-objects/id.vo";
+import { IdVO } from "@shared/domain/value-objects/id.vo";
 import { DeleteUserUseCase } from "src/user/application/use-cases/delete-user.use-case";
 import { changeUserPassowrdDto } from "../dtos/change-user-password.dto";
 import { UpdateUserPasswordUseCase } from "src/user/application/use-cases/update-user-password.use-case";

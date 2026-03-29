@@ -2,7 +2,7 @@ import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { UseCasePort } from "@shared/application/ports/use-case.port";
 import { User } from "src/user/domain/entities/user.entity";
 import { USER_REPOSITORY, UserRepositoryPort } from "../ports/user-repository.port";
-import { IdVO } from "src/user/domain/value-objects/id.vo";
+import { IdVO } from "@shared/domain/value-objects/id.vo";
 import { NameVO } from "src/user/domain/value-objects/name.vo";
 import { EmailVO } from "src/user/domain/value-objects/email.vo";
 import { BirthdateVO } from "src/user/domain/value-objects/birthdate.vo";

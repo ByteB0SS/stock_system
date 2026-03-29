@@ -1,5 +1,5 @@
 import { EmailVO } from "../value-objects/email.vo";
-import { IdVO } from "../value-objects/id.vo";
+import { IdVO } from "../../../@shared/domain/value-objects/id.vo";
 import { NameVO } from "../value-objects/name.vo";
 import { PasswordVO } from "../value-objects/password.vo";
 import { SlugVO } from "@shared/domain/value-objects/slug.vo";

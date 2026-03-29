@@ -5,7 +5,7 @@ import { UserRepositoryPort } from "src/user/application/ports/user-repository.p
 import { User } from "src/user/domain/entities/user.entity";
 import { BirthdateVO } from "src/user/domain/value-objects/birthdate.vo";
 import { EmailVO } from "src/user/domain/value-objects/email.vo";
-import { IdVO } from "src/user/domain/value-objects/id.vo";
+import { IdVO } from "@shared/domain/value-objects/id.vo";
 import { NameVO } from "src/user/domain/value-objects/name.vo";
 import { PasswordVO } from "src/user/domain/value-objects/password.vo";
 import { User as prismaUser } from "generated/prisma";
