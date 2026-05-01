@@ -8,7 +8,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -39,15 +38,16 @@ model User {
 }
 
 model Workspace {
-  id        String          @id @default(uuid())
-  name      String
-  slug      String          @unique
-  planId    Int             @map("plan_id")
-  ownerId   String          @map("owner_id")
-  statsus   WorkspaceStatus @default(ACTIVE)
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime?       @updatedAt @map("updated_at")
-  deletedAt DateTime?       @map("deleted_at")
+  id          String          @id @default(uuid())
+  name        String
+  slug        String          @unique
+  planId      Int             @map("plan_id")
+  ownerId     String          @map("owner_id")
+  description String?
+  status      WorkspaceStatus @default(ACTIVE)
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime?       @updatedAt @map("updated_at")
+  deletedAt   DateTime?       @map("deleted_at")
 
   // relations
   owner              User                @relation(fields: [ownerId], references: [id])
@@ -92,7 +92,7 @@ model Product {
   cadasterId     String        @map("cadaster_id")
   workspaceId    String        @map("workspace_id")
   status         ProductStatus @default(ACTIVE)
-  unit           String
+  unit           String?
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime?     @updatedAt @map("updated_at")
   deletedAt      DateTime?     @map("deleted_at")

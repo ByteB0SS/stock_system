@@ -1,17 +1,17 @@
 import { randomUUID } from "crypto"
 
-export class IdVO{
-    private readonly value: string
+export class IdVO {
+  private readonly value: string
 
-    constructor (id?: string) {
-        this.value = id || randomUUID()
-    }
+  constructor(id?: string) {
+    this.value = id || randomUUID()
+  }
 
-    equals (otherId: IdVO) {
-        return this.value === otherId.get()
-    }
+  equals(otherId: IdVO) {
+    return this.value === otherId.get()
+  }
 
-    get () {
-        return this.value
-    }
-} 
+  get() {
+    return this.value
+  }
+}

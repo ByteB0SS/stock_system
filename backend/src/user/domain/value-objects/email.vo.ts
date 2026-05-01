@@ -1,26 +1,26 @@
-import { HttpException } from "@nestjs/common";
+import { HttpException } from "@nestjs/common"
 
 export class EmailVO {
-    private readonly  emailRegex =  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    private readonly value: string
+  private readonly emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  private readonly value: string
 
-    constructor (email: string) {
-        if(!this.isValid(email)){
-            throw new HttpException('Email inválido', 400)
-        }
-
-        this.value = email.trim()
+  constructor(email: string) {
+    if (!this.isValid(email)) {
+      throw new HttpException("Email inválido", 400)
     }
 
-    isValid (email: string): boolean {
-        return this.emailRegex.test(email)
-    }
+    this.value = email.trim()
+  }
 
-    get (): string {
-        return this.value
-    }
+  isValid(email: string): boolean {
+    return this.emailRegex.test(email)
+  }
 
-    equals (other: EmailVO): boolean {
-        return  this.value === other.get()
-    }
+  get(): string {
+    return this.value
+  }
+
+  equals(other: EmailVO): boolean {
+    return this.value === other.get()
+  }
 }

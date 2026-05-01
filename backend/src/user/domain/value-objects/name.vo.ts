@@ -1,21 +1,21 @@
 import { HttpException } from "@nestjs/common"
 
 export class NameVO {
-    private readonly value: string 
+  private readonly value: string
 
-    constructor (name: string) {
-        if (!this.isValid(name)) {
-            throw new HttpException('O nome deve conter pelo menos 3 caracteres', 400)
-        } 
-
-        this.value = name.trim()
+  constructor(name: string) {
+    if (!this.isValid(name)) {
+      throw new HttpException("O nome deve conter pelo menos 3 caracteres", 400)
     }
 
-    isValid (name: string): boolean {
-        return name.length > 2
-    }
+    this.value = name.trim()
+  }
 
-    get (): string {
-        return this.value
-    }
+  isValid(name: string): boolean {
+    return name.length > 2
+  }
+
+  get(): string {
+    return this.value
+  }
 }

@@ -10,4 +10,4 @@ RUN pnpm prisma generate
 COPY . .
 RUN pnpm build
 CMD ["node", "dist/src/main"]
-EXPOSE 3000                                             
+EXPOSE 3000

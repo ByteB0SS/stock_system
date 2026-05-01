@@ -1,4 +1,4 @@
 export class getUserQuerydto {
-    id?: string
-    slug?: string
+  id?: string
+  slug?: string
 }
