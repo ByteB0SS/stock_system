@@ -14,7 +14,7 @@ export class GetUserUseCase implements UseCasePort<UserSelectors, User> {
   constructor(
     @Inject(USER_REPOSITORY_SYMBOL)
     private readonly userRepository: UserRepositoryPort,
-  ) { }
+  ) {}
 
   async execute(input: UserSelectors): Promise<User> {
     const user = await this.userRepository.findByUnique(input)

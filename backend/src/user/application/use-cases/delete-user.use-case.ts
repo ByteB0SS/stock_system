@@ -8,7 +8,7 @@ export class DeleteUserUseCase implements UseCasePort<string, boolean> {
   constructor(
     @Inject(USER_REPOSITORY_SYMBOL)
     private readonly userRepository: UserRepositoryPort,
-  ) { }
+  ) {}
 
   async execute(id: string): Promise<boolean> {
     try {

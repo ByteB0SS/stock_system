@@ -17,7 +17,7 @@ export class UpdateUserPasswordUseCase implements UseCasePort<UpdateUserPassword
     @Inject(USER_REPOSITORY_SYMBOL)
     private readonly userRepository: UserRepositoryPort,
     @Inject(HASH) private readonly hasher: HashPort,
-  ) { }
+  ) {}
 
   async execute(input: UpdateUserPasswordInput): Promise<boolean> {
     const userToUpdate = await this.userRepository.findById(input.userId)

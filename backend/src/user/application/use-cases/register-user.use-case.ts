@@ -19,7 +19,7 @@ export class RegisterUserUseCase implements UseCasePort<registerUserInputDto, Pr
     @Inject(HASH) private readonly hasher: HashPort,
     @Inject(USER_REPOSITORY_SYMBOL)
     private readonly userRepository: UserRepositoryPort,
-  ) { }
+  ) {}
 
   async execute(input: registerUserInputDto): Promise<User> {
     const userWithSameEmail = await this.userRepository.findByEmail(new EmailVO(input.email))

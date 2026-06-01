@@ -4,7 +4,7 @@ import { AuthSessionGeneratorPort, AuthSessionGeneratorReturnType, userTokenPayl
 
 @Injectable()
 export class AuthSessionGeneratorAdapter implements AuthSessionGeneratorPort {
-  constructor(@Inject(TOKEN_SYMBOL) private readonly tokenManager: TokenPort) { }
+  constructor(@Inject(TOKEN_SYMBOL) private readonly tokenManager: TokenPort) {}
 
   genTokens(payload: userTokenPayload): AuthSessionGeneratorReturnType {
     const accessToken = this.tokenManager.genToken(payload, "ACCESS_TOKEN", 60 * 15)

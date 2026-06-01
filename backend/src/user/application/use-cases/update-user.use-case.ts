@@ -18,7 +18,7 @@ export class UpdateUserUseCase implements UseCasePort<{ data: updateUserInput; u
   constructor(
     @Inject(USER_REPOSITORY_SYMBOL)
     private readonly userRepository: UserRepositoryPort,
-  ) { }
+  ) {}
 
   async execute(input: { data: updateUserInput; userId: IdVO }): Promise<User> {
     const user = await this.userRepository.findById(input.userId)

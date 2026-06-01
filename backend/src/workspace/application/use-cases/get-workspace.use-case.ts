@@ -7,7 +7,7 @@ export type GetWorkspaceInput = WorkspaceSelectors
 
 @Injectable()
 export class GetWorkspaceUseCase implements UseCasePort<GetWorkspaceInput, Workspace> {
-  constructor(  
+  constructor(
     @Inject(WORKSPACE_REPOSITORY_PORT)
     private readonly workspaceRepo: WorkspaceRepositoryPort,
   ) {}

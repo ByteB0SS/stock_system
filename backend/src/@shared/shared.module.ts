@@ -13,4 +13,4 @@ import { ConfigModule } from "@nestjs/config"
   ],
   exports: [],
 })
-export class SharedModule { }
+export class SharedModule {}

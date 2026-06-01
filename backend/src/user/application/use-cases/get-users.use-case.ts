@@ -15,7 +15,7 @@ export class GetUsersUseCase implements UseCasePort<GetUsersUseCaseInput, User[]
   constructor(
     @Inject(USER_REPOSITORY_SYMBOL)
     private readonly userRepository: UserRepositoryPort,
-  ) { }
+  ) {}
 
   async execute(input: GetUsersUseCaseInput): Promise<User[]> {
     const { lastId, limit, nameFilter, slugFilter } = input

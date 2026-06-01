@@ -16,7 +16,7 @@ export class RefreshTokenUsecase implements UseCasePort<RefreshTokenInput, Refre
   constructor(
     @Inject(AUTH_SESSION_GENERATOR_PORT) private readonly authGenerator: AuthSessionGeneratorPort,
     @Inject(TOKEN_SYMBOL) private readonly tokenService: TokenPort,
-  ) { }
+  ) {}
 
   async execute(input: RefreshTokenInput): Promise<RefreshTokenOutput> {
     const tokenIsCorrect = this.tokenService.isValid(input.refreshToken, "REFRESH_TOKEN")

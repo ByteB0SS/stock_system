@@ -18,10 +18,10 @@ export class NameVO {
     return name
       .toLowerCase()
       .trim()
-      .replace(/\s+/g, ' ')
-      .split(' ')
-      .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1))
-      .join(' ');
+      .replace(/\s+/g, " ")
+      .split(" ")
+      .map((palavra) => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+      .join(" ")
   }
 
   get() {

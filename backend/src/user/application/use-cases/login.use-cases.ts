@@ -27,7 +27,7 @@ export class LoginUserUseCase implements UseCasePort<loginUserInputDto, Promise<
     private readonly userRepository: UserRepositoryPort,
     @Inject(AUTH_SESSION_GENERATOR_PORT)
     private readonly resfreshAndAccessTokenGenerator: AuthSessionGeneratorPort,
-  ) { }
+  ) {}
 
   async execute(credentials: loginUserInputDto, returnUser: boolean = true): Promise<loginRetrunType> {
     const userWithSameEmail = await this.userRepository.findByEmail(new EmailVO(credentials.email))

@@ -56,18 +56,18 @@ export class Workspace {
   public setName(name: string) {
     const nameToSet = new NameVO(name)
     if (nameToSet.get() === this.props.name.get()) return
-    
+
     this.props.name = nameToSet
     this.props.slug = SlugVO.createFromText(nameToSet.get())
   }
 
   public setDescription(description: string) {
-    if(description == this.props.description) return
+    if (description == this.props.description) return
     this.props.description = description
   }
 
   public setPlanId(planId: number) {
-    if(planId == this.props.planId) return
+    if (planId == this.props.planId) return
     this.props.planId = planId
   }
 
@@ -86,7 +86,7 @@ export class Workspace {
     }
   }
 
-  public getProps (): IWorkspace {
+  public getProps(): IWorkspace {
     return this.props
   }
 
