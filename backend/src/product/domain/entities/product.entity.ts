@@ -66,7 +66,9 @@ export class Product {
     })
   }
 
-  public setProps(updatePropsInput: UpdateProductuInput) { }
+  public setProps(updatePropsInput: UpdateProductuInput) {
+    
+  }
 
   public addQuantity(quant: number) {
     this.props.quantity.add(quant)
