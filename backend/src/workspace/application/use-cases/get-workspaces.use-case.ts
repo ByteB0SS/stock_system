@@ -1,6 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common"
 import { UseCasePort } from "@shared/application/ports/use-case.port"
-import { User } from "src/user/domain/entities/user.entity"
 import { Workspace } from "src/workspace/domain/entities/workspace.entity"
 import { WORKSPACE_REPOSITORY_PORT, WorkspaceRepositoryPort } from "../ports/workspace-repository.port"
 
