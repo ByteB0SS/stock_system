@@ -1,7 +1,7 @@
 export class SlugVO {
   private readonly value: string
 
-  private constructor(value: string) {
+  public constructor(value: string) {
     if (!value || value.trim().length === 0) {
       throw new Error("Slug value cannot be empty.")
     }
@@ -16,10 +16,8 @@ export class SlugVO {
     return suffix
   }
 
-  public static createFromText(text: string): SlugVO {
-    const suffix = this.generateHexSuffix()
-
-    const cleaned = text
+  public static cleanText (text: string) {
+    return text
       .trim()
       .toLowerCase()
       .normalize("NFD")
@@ -29,12 +27,18 @@ export class SlugVO {
       .replace(/-+/g, "-")
       .replace(/^-+/, "")
       .replace(/-+$/, "")
+  }
+
+  public static createFromText(text: string): SlugVO {
+    const suffix = this.generateHexSuffix()
+
+    const cleaned = this.cleanText(text)
 
     return new SlugVO(`${cleaned}_${suffix}`)
   }
 
   public static restore(slug: string): SlugVO {
-    return new SlugVO(slug)
+    return new SlugVO(this.cleanText(slug))
   }
 
   public get(): string {

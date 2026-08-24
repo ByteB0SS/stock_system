@@ -84,10 +84,10 @@ model Product {
   id             String        @id @default(uuid())
   barcode        String        @unique
   name           String
-  Purchasedprice Decimal       @map("purchased_price")
+  purchasedPrice Decimal?       @map("purchased_price")
   price          Decimal
   quantity       Int
-  minQuantity    Int           @map("min_quantity")
+  minQuantity    Int?           @map("min_quantity")
   slug           String        @unique
   cadasterId     String        @map("cadaster_id")
   workspaceId    String        @map("workspace_id")
